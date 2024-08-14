@@ -86,14 +86,12 @@ class Utilisateur:
             
             if connection.is_connected():
                 cursor = connection.cursor()
-                # Vérifier si l'identifiant existe déjà
                 cursor.execute("SELECT * FROM utilisateurs WHERE pseudo = %s", (identifiant,))
                 if cursor.fetchone():
                     print("Identifiant déjà utilisé.")
                     enregistrer_user()
                     return
 
-                # Insérer le nouvel utilisateur
                 cursor.execute("INSERT INTO utilisateurs (pseudo, mot_de_passe, date_creation) VALUES (%s, %s, %s)",
                             (identifiant, motDePasse, creationDate))
                 connection.commit()
@@ -120,12 +118,10 @@ class Utilisateur:
             
             if connection.is_connected():
                 cursor = connection.cursor()
-                # Vérifier si l'utilisateur existe
                 cursor.execute("SELECT * FROM utilisateurs WHERE pseudo = %s", (identifiant,))
                 user = cursor.fetchone()
                 
                 if user:
-                    # Mettre à jour le mot de passe
                     cursor.execute("UPDATE utilisateurs SET mot_de_passe = %s WHERE pseudo = %s",
                                 (motDePasse, identifiant))
                     connection.commit()
@@ -153,13 +149,11 @@ class Utilisateur:
             
             if connection.is_connected():
                 cursor = connection.cursor()
-                # Vérifier si l'identifiant et le mot de passe sont corrects
                 cursor.execute("SELECT * FROM utilisateurs WHERE pseudo = %s AND mot_de_passe = %s",
                             (identifiant, motDePasse))
                 user = cursor.fetchone()
                 
                 if user:
-                    # Supprimer l'utilisateur
                     cursor.execute("DELETE FROM utilisateurs WHERE pseudo = %s", (identifiant,))
                     connection.commit()
                     print(f"Utilisateur {identifiant} supprimé avec succès.")
@@ -233,7 +227,6 @@ class Utilisateur:
             
             if connection.is_connected():
                 cursor = connection.cursor()
-                # Vérifier si l'utilisateur existe déjà
                 cursor.execute("SELECT * FROM utilisateurs WHERE pseudo = %s", (default_username,))
                 if not cursor.fetchone(): 
                     cursor.execute("INSERT INTO utilisateurs (pseudo, mot_de_passe, date_creation) VALUES (%s, %s, %s)",

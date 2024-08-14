@@ -61,13 +61,11 @@ class Professeur(IEducation,ICRUDProfesseur,Personne):
             if connection.is_connected():
                 cursor = connection.cursor()
                 
-                # Insérer dans la table personnes
                 cursor.execute("INSERT INTO personnes (date_naissance, ville, prenom, nom, telephone) VALUES (%s, %s, %s, %s, %s)",
                             (professeur.get_dateNaissance(), professeur.get_ville(), professeur.get_prenom(), professeur.get_nom(), professeur.get_telephone()))
                 connection.commit()
                 id_personne = cursor.lastrowid
 
-                # Insérer dans la table eleves
                 cursor.execute("INSERT INTO professeurs (id_personne, vacant, matiere_enseigne, prochain_cours, sujet_prochaine_reunion	) VALUES (%s, %s, %s, %s, %s)",
                             (id_personne, professeur.get_vacant(), professeur.get_matiereEnseignee(), professeur.get_prochainCours(), professeur.get_sujetProchaineReunion()))
                 connection.commit()
@@ -167,21 +165,17 @@ class Professeur(IEducation,ICRUDProfesseur,Personne):
             
             if connection.is_connected():
                 cursor = connection.cursor()
-                # Commencez une transaction
                 connection.start_transaction()
 
-                # Supprimez d'abord l'élève
                 delete_personne_query = "DELETE FROM personnes WHERE id = %s"
                 cursor.execute(delete_personne_query, (id,))
 
-                # Supprimez ensuite l'élève associé
                 delete_eleve_query = """
                     DELETE FROM professeurs 
                     WHERE id_personne = %s
                 """
                 cursor.execute(delete_eleve_query, (id,))
 
-                # Validez la transaction
                 connection.commit()
                 print(f"Professeur avec ID {id} supprimés.")
         

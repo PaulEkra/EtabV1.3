@@ -63,7 +63,11 @@ def enregistrer_eleve():
     )
 
 def delete_student():
-    id= int(input("Entrez l'id de lélève à supprimer:"))
+    while True:
+        id= input("Entrez l'id de lélève à supprimer:")
+        if id.isdigit():
+             break
+        else: print("l'id doit être un entier")
     Eleve.supprimer(id)
     get_user_choice("1: Supprimer un autre élève\n2: Revenir au menu précendent\nEntrez votre choix:",delete_student,menu_eleve)
     

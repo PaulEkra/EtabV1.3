@@ -3,7 +3,7 @@ from menu import accueil,get_whit_no_space,erreur
 from Services.Gestions_eleves import menu_eleve
 from Services.Gestions_professeurs import menu_professeur
 from Services.Gestions_Utilisateurs import connexion,menu_utilisateur
-from Classes.Utilisateur import Utilisateur as u
+from models.Utilisateur import Utilisateur as u
 # Lancement de l'application
 start_time = time.time()
 u.initialize_default_user_sql()

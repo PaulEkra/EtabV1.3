@@ -43,13 +43,11 @@ class Eleve(Personne,ICRudeleve):
             if connection.is_connected():
                 cursor = connection.cursor()
                 
-                # Insérer dans la table personnes
                 cursor.execute("INSERT INTO personnes (date_naissance, ville, prenom, nom, telephone) VALUES (%s, %s, %s, %s, %s)",
                             (eleve.get_dateNaissance(), eleve.get_ville(), eleve.get_prenom(), eleve.get_nom(), eleve.get_telephone()))
                 connection.commit()
                 id_personne = cursor.lastrowid
 
-                # Insérer dans la table eleves
                 cursor.execute("INSERT INTO eleves (id_personne, classe, matricule) VALUES (%s, %s, %s)",
                             (id_personne, eleve.get_classe(), eleve.get_matricule()))
                 connection.commit()
@@ -77,7 +75,6 @@ class Eleve(Personne,ICRudeleve):
             if connection.is_connected():
                 cursor = connection.cursor()
 
-                # Mettre à jour la table personnes
                 update_personne_query = """
                 UPDATE personnes 
                 SET date_naissance = %s, ville = %s, prenom = %s, nom = %s, telephone = %s 
@@ -85,7 +82,6 @@ class Eleve(Personne,ICRudeleve):
                 """
                 cursor.execute(update_personne_query, 
                         (eleve['personne']['date_naissance'], eleve['personne']['ville'], eleve['personne']['prenom'], eleve['personne']['nom'], eleve['personne']['telephone'], eleve['personne']['id']))                
-                # Mettre à jour la table eleves
                 update_eleve_query = """
                 UPDATE eleves 
                 SET classe = %s, matricule = %s 
@@ -93,7 +89,6 @@ class Eleve(Personne,ICRudeleve):
                 """
                 cursor.execute(update_eleve_query, (eleve['eleve']['classe'], eleve['eleve']['matricule'], eleve['eleve']['id']))
                 
-                # Valider les modifications
                 connection.commit()
 
                 print(f"Élève {eleve['personne']['prenom']} {eleve['personne']['nom']} modifié avec succès.")

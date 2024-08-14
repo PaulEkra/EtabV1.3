@@ -1,8 +1,8 @@
 import datetime
 from menu import print_welcome_message,print_menu,erreur,get_user_choice,get_whit_no_space,accueil
-from Classes.Utilisateur import Utilisateur as user
+from models.Utilisateur import Utilisateur as user
 
-from Classes.ChoixInvalide import ChoixInvalide
+from models.ChoixInvalide import ChoixInvalide
 # Lancement de l'application
 def connexion():
     while True:

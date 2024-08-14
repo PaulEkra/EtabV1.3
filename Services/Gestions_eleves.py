@@ -1,8 +1,8 @@
 from menu import get_whit_no_space,get_user_choice,accueil
-from Classes.Eleve import Eleve
+from models.Eleve import Eleve
 from datetime import date,datetime
-from Classes.ChoixInvalide import ChoixInvalide
-from Classes.Personne import Personne
+from models.ChoixInvalide import ChoixInvalide
+from models.Personne import Personne
 
 #Fonctions Menu ELEVES
 def menu_eleve():

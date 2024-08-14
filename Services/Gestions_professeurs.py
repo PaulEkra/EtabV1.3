@@ -1,7 +1,7 @@
 from menu import get_whit_no_space,get_user_choice,accueil
-from Classes.Professeur import Professeur
+from models.Professeur import Professeur
 from datetime import datetime
-from Classes.ChoixInvalide import ChoixInvalide
+from models.ChoixInvalide import ChoixInvalide
 
 #Fonctions Menu PROFESSEURS
 def menu_professeur():

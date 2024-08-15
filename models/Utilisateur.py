@@ -74,7 +74,7 @@ class Utilisateur:
     # Méthode ajouter
     @staticmethod
     def ajouterCompte(identifiant, motDePasse,creationDate):
-        from Services.Gestions_Utilisateurs import enregistrer_user, menu_utilisateur
+        from Services.Gestions_Utilisateurs import Gestion_Utilisateurs as gest_user
 
         try:
             connection = mysql.connector.connect(
@@ -88,8 +88,8 @@ class Utilisateur:
                 cursor = connection.cursor()
                 cursor.execute("SELECT * FROM utilisateurs WHERE pseudo = %s", (identifiant,))
                 if cursor.fetchone():
-                    print("Identifiant déjà utilisé.")
-                    enregistrer_user()
+                    print("Identifiant déjà utilisé.\nVeuillez en choisir un autre.")
+                    gest_user.enregistrer_user()
                     return
 
                 cursor.execute("INSERT INTO utilisateurs (pseudo, mot_de_passe, date_creation) VALUES (%s, %s, %s)",

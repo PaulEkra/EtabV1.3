@@ -2,7 +2,6 @@ from models.Personne import Personne
 import mysql.connector
 from mysql.connector import Error
 from Interfaces.ICRUDElve import ICRudeleve
-from datetime import datetime
 
 class Eleve(Personne,ICRudeleve):
 
@@ -43,13 +42,8 @@ class Eleve(Personne,ICRudeleve):
             if connection.is_connected():
                 cursor = connection.cursor()
                 
-                cursor.execute("INSERT INTO personnes (date_naissance, ville, prenom, nom, telephone) VALUES (%s, %s, %s, %s, %s)",
-                            (eleve.get_dateNaissance(), eleve.get_ville(), eleve.get_prenom(), eleve.get_nom(), eleve.get_telephone()))
-                connection.commit()
-                id_personne = cursor.lastrowid
-
-                cursor.execute("INSERT INTO eleves (id_personne, classe, matricule) VALUES (%s, %s, %s)",
-                            (id_personne, eleve.get_classe(), eleve.get_matricule()))
+                cursor.execute("INSERT INTO eleves (date_naissance, ville, prenom, nom, telephone, classe, matricule) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                            (eleve.get_dateNaissance(), eleve.get_ville(), eleve.get_prenom(), eleve.get_nom(), eleve.get_telephone(), eleve.get_classe(), eleve.get_matricule()))
                 connection.commit()
                 print(f"Élève {eleve.get_prenom()} {eleve.get_nom()} ajouté avec succès.")
 
@@ -63,7 +57,7 @@ class Eleve(Personne,ICRudeleve):
     #Methode modifier
     @staticmethod
     def modifier(eleve):
-        from Services.Gestions_eleves import edit_choice
+        from Services.Gestions_eleves import Gestions_eleves as gest_eleve
         try:
             connection = mysql.connector.connect(
                 host='localhost',
@@ -76,23 +70,16 @@ class Eleve(Personne,ICRudeleve):
                 cursor = connection.cursor()
 
                 update_personne_query = """
-                UPDATE personnes 
-                SET date_naissance = %s, ville = %s, prenom = %s, nom = %s, telephone = %s 
+                UPDATE eleves  
+                SET date_naissance = %s, ville = %s, prenom = %s, nom = %s, telephone = %s, classe = %s, matricule = %s 
                 WHERE id = %s
                 """
                 cursor.execute(update_personne_query, 
-                        (eleve['personne']['date_naissance'], eleve['personne']['ville'], eleve['personne']['prenom'], eleve['personne']['nom'], eleve['personne']['telephone'], eleve['personne']['id']))                
-                update_eleve_query = """
-                UPDATE eleves 
-                SET classe = %s, matricule = %s 
-                WHERE id_personne = %s
-                """
-                cursor.execute(update_eleve_query, (eleve['eleve']['classe'], eleve['eleve']['matricule'], eleve['eleve']['id']))
-                
+                        (eleve['date_naissance'], eleve['ville'], eleve['prenom'], eleve['nom'], eleve['telephone'], eleve['classe'], eleve['matricule'], eleve['id']))
                 connection.commit()
 
-                print(f"Élève {eleve['personne']['prenom']} {eleve['personne']['nom']} modifié avec succès.")
-                edit_choice(eleve)
+                print(f"Élève {eleve['prenom']} {eleve['nom']} modifié avec succès.")
+                gest_eleve.edit_choice(eleve)
         
         except Error as e:
             print(f"Erreur lors de la modification de l'élève : {e}")
@@ -118,13 +105,12 @@ class Eleve(Personne,ICRudeleve):
             
             if connection.is_connected():
                 cursor = connection.cursor()
-                query = " SELECT personnes.id, personnes.nom, personnes.prenom, personnes.ville, personnes.date_naissance, personnes.telephone, eleves.classe, eleves.matricule FROM personnes JOIN eleves ON personnes.id = eleves.id_personne"
+                query = "SELECT * FROM eleves"
                 cursor.execute(query)
                 eleves = cursor.fetchall()
 
                 if not eleves:
-                    return "Il n'y a pas d'élève."
-            
+                    return None
             return eleves
         except Error as e:
             print(f"Error: {e}")
@@ -148,28 +134,16 @@ class Eleve(Personne,ICRudeleve):
             
             if connection.is_connected():
                 cursor = connection.cursor()
-                # Commencez une transaction
-                connection.start_transaction()
-
-                # Supprimez d'abord l'élève
-                delete_personne_query = "DELETE FROM personnes WHERE id = %s"
-                cursor.execute(delete_personne_query, (id,))
-
-                # Supprimez ensuite l'élève associé
-                delete_eleve_query = """
-                    DELETE FROM eleves 
-                    WHERE id_personne = %s
-                """
-                cursor.execute(delete_eleve_query, (id,))
-
-                # Validez la transaction
+                query = "DELETE FROM eleves WHERE id = %s"
+                cursor.execute(query, (id,))
+                if cursor.rowcount > 0:
+                    print(f"Élève avec ID {id} supprimés.")
+                else:
+                    print(f"Aucun élève avec ID {id} n'a été trouvé")
                 connection.commit()
-                print(f"Élève avec ID {id} supprimés.")
         
         except Error as e:
             print(f"Error: {e}")
-            
-        
         finally:
             if connection.is_connected():
                 cursor.close()
@@ -178,7 +152,8 @@ class Eleve(Personne,ICRudeleve):
     #Methode obtenir
     @staticmethod
     def obtenir(identifiant):
-        from Services.Gestions_eleves import edit_eleve
+        from Services.Gestions_eleves import Gestions_eleves as gest_eleve
+        from menu import Menu as m
         try:
             connection = mysql.connector.connect(
                 host='localhost',
@@ -189,24 +164,15 @@ class Eleve(Personne,ICRudeleve):
             
             if connection.is_connected():
                 cursor = connection.cursor(dictionary=True)
-                get_personne_query = "SELECT * FROM personnes WHERE id = %s"
-                cursor.execute(get_personne_query, (identifiant,))
-                personne = cursor.fetchone()
+                query = "SELECT * FROM eleves WHERE id = %s"
+                cursor.execute(query, (identifiant,))
+                eleve = cursor.fetchone()
 
-                if personne:
-                    get_eleve_query = "SELECT * FROM eleves WHERE id_personne = %s"
-                    cursor.execute(get_eleve_query, (identifiant,))
-                    eleve = cursor.fetchone()
-                    if eleve:
-                        result = {
-                            'personne': personne,
-                            'eleve': eleve
-                        }
-                        return result
-                    else: print("Ce n'est pas un élève")
+                if eleve:
+                    return eleve
                 else:
                     print(f"Il y a 0 élève avec ID {identifiant}")
-                    return edit_eleve()
+                    return m.get_user_choice("1. Réessayer\n2. Menu précédent\nEntrez votre choix:",gest_eleve.edit_eleve,gest_eleve.menu_eleve)
 
         except Error as e:
             print(f"Error: {e}")

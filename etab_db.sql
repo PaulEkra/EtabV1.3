@@ -30,32 +30,18 @@ SET time_zone = "+00:00";
 DROP TABLE IF EXISTS `eleves`;
 CREATE TABLE IF NOT EXISTS `eleves` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `id_personne` int DEFAULT NULL,
-  `classe` varchar(50) DEFAULT NULL,
-  `matricule` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `matricule` (`matricule`),
-  KEY `id_personne` (`id_personne`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `personnes`
---
-
-DROP TABLE IF EXISTS `personnes`;
-CREATE TABLE IF NOT EXISTS `personnes` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `date_naissance` date NOT NULL,
   `ville` varchar(100) NOT NULL,
   `prenom` varchar(50) NOT NULL,
   `nom` varchar(50) NOT NULL,
   `telephone` varchar(15) NOT NULL,
-  PRIMARY KEY (`id`)
+  `classe` varchar(50) DEFAULT NULL,
+  `matricule` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `matricule` (`matricule`),
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- --------------------------------------------------------
+
 
 --
 -- Structure de la table `professeurs`
@@ -64,13 +50,16 @@ CREATE TABLE IF NOT EXISTS `personnes` (
 DROP TABLE IF EXISTS `professeurs`;
 CREATE TABLE IF NOT EXISTS `professeurs` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `id_personne` int DEFAULT NULL,
+  `date_naissance` date NOT NULL,
+  `ville` varchar(100) NOT NULL,
+  `prenom` varchar(50) NOT NULL,
+  `nom` varchar(50) NOT NULL,
+  `telephone` varchar(15) NOT NULL,
   `vacant` tinyint(1) DEFAULT NULL,
   `matiere_enseigne` varchar(100) DEFAULT NULL,
   `prochain_cours` varchar(100) DEFAULT NULL,
   `sujet_prochaine_reunion` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `id_personne` (`id_personne`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------

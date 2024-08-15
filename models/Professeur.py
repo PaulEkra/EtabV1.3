@@ -6,7 +6,6 @@ import mysql.connector
 from mysql.connector import Error
 #Classe Professeur
 class Professeur(IEducation,ICRUDProfesseur,Personne):
-    professeurs=[]
     def __init__(self, id, dateNaissance, ville, prenom, nom,telephone, vacant,matiereEnseignee, prochainCours, sujetProchaineReunion):
         super().__init__(id, dateNaissance, ville, prenom, nom, telephone)
         self.__vacant = vacant
@@ -61,13 +60,8 @@ class Professeur(IEducation,ICRUDProfesseur,Personne):
             if connection.is_connected():
                 cursor = connection.cursor()
                 
-                cursor.execute("INSERT INTO personnes (date_naissance, ville, prenom, nom, telephone) VALUES (%s, %s, %s, %s, %s)",
-                            (professeur.get_dateNaissance(), professeur.get_ville(), professeur.get_prenom(), professeur.get_nom(), professeur.get_telephone()))
-                connection.commit()
-                id_personne = cursor.lastrowid
-
-                cursor.execute("INSERT INTO professeurs (id_personne, vacant, matiere_enseigne, prochain_cours, sujet_prochaine_reunion	) VALUES (%s, %s, %s, %s, %s)",
-                            (id_personne, professeur.get_vacant(), professeur.get_matiereEnseignee(), professeur.get_prochainCours(), professeur.get_sujetProchaineReunion()))
+                cursor.execute("INSERT INTO professeurs (date_naissance, ville, prenom, nom, telephone, vacant, matiere_enseigne, prochain_cours, sujet_prochaine_reunion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                            (professeur.get_dateNaissance(), professeur.get_ville(), professeur.get_prenom(), professeur.get_nom(), professeur.get_telephone(),professeur.get_vacant(), professeur.get_matiereEnseignee(), professeur.get_prochainCours(), professeur.get_sujetProchaineReunion()))
                 connection.commit()
                 print(f"Professeur {professeur.get_prenom()} {professeur.get_nom()} ajouté avec succès.")
 
@@ -81,7 +75,7 @@ class Professeur(IEducation,ICRUDProfesseur,Personne):
     @staticmethod
     #Méthode modifier
     def modifier(professeur):
-        from Services.Gestions_professeurs import edit_choice
+        from Services.Gestions_professeurs import Gestions_professeurs as gest_prof
         try:
             connection = mysql.connector.connect(
                 host='localhost',
@@ -93,24 +87,17 @@ class Professeur(IEducation,ICRUDProfesseur,Personne):
             if connection.is_connected():
                 cursor = connection.cursor()
 
-                update_personne_query = """
-                UPDATE personnes 
-                SET date_naissance = %s, ville = %s, prenom = %s, nom = %s, telephone = %s 
+                query = """
+                UPDATE professeurs 
+                SET date_naissance = %s, ville = %s, prenom = %s, nom = %s, telephone = %s, vacant = %s, matiere_enseigne = %s, prochain_cours= %s,  sujet_prochaine_reunion= %s 
                 WHERE id = %s
                 """
-                cursor.execute(update_personne_query, 
-                        (professeur['personne']['date_naissance'], professeur['personne']['ville'], professeur['personne']['prenom'], professeur['personne']['nom'], professeur['personne']['telephone'], professeur['personne']['id']))                
-                update_eleve_query = """
-                UPDATE professeurs 
-                SET vacant = %s, matiere_enseigne = %s, prochain_cours= %s,  sujet_prochaine_reunion= %s
-                WHERE id_personne = %s
-                """
-                cursor.execute(update_eleve_query, (professeur['professeur']['vacant'],professeur['professeur']['matiere_enseigne'], professeur['professeur']['prochain_cours'], professeur['professeur']['sujet_prochaine_reunion'], professeur['personne']['id']))
-                
+                cursor.execute(query, 
+                        (professeur['date_naissance'], professeur['ville'], professeur['prenom'], professeur['nom'], professeur['telephone'],professeur['vacant'], professeur['matiere_enseigne'], professeur['prochain_cours'], professeur['sujet_prochaine_reunion'], professeur['id']))                
                 connection.commit()
 
-                print(f"Élève {professeur['personne']['prenom']} {professeur['personne']['nom']} modifié avec succès.")
-                edit_choice(professeur)
+                print(f"Élève {professeur['prenom']} {professeur['nom']} modifié avec succès.")
+                gest_prof.edit_choice(professeur)
         
         except Error as e:
             print(f"Erreur lors de la modification du professeur : {e}")
@@ -135,14 +122,14 @@ class Professeur(IEducation,ICRUDProfesseur,Personne):
             
             if connection.is_connected():
                 cursor = connection.cursor()
-                query = " SELECT personnes.id, personnes.nom, personnes.prenom, personnes.ville, personnes.date_naissance, personnes.telephone, professeurs.vacant, professeurs.matiere_enseigne, professeurs.prochain_cours, professeurs.sujet_prochaine_reunion FROM personnes JOIN professeurs ON personnes.id = professeurs.id_personne"
+                query = " SELECT * FROM professeurs"
                 cursor.execute(query)
-                eleves = cursor.fetchall()
+                profs = cursor.fetchall()
 
-                if not eleves:
-                    return "Il n'y a pas de professeurs."
+                if not profs:
+                    return None
             
-            return eleves
+            return profs
         except Error as e:
             print(f"Error: {e}")
             return False
@@ -167,17 +154,13 @@ class Professeur(IEducation,ICRUDProfesseur,Personne):
                 cursor = connection.cursor()
                 connection.start_transaction()
 
-                delete_personne_query = "DELETE FROM personnes WHERE id = %s"
-                cursor.execute(delete_personne_query, (id,))
-
-                delete_eleve_query = """
-                    DELETE FROM professeurs 
-                    WHERE id_personne = %s
-                """
-                cursor.execute(delete_eleve_query, (id,))
-
+                query = "DELETE FROM professeurs WHERE id = %s"
+                cursor.execute(query, (id,))
                 connection.commit()
-                print(f"Professeur avec ID {id} supprimés.")
+                if cursor.rowcount > 0:
+                    print(f"Professeur avec ID {id} supprimés.")
+                else:
+                    print(f"Aucun professeur avec ID {id} n'a été")
         
         except Error as e:
             print(f"Error: {e}")
@@ -191,8 +174,8 @@ class Professeur(IEducation,ICRUDProfesseur,Personne):
     #Méthode obtenir
     @staticmethod
     def obtenir(identifiant):
-        from Services.Gestions_professeurs import edit_prof,menu_professeur
-        from menu import get_user_choice
+        from Services.Gestions_professeurs import Gestions_professeurs as gest_prof
+        from menu import Menu as m
         try:
             connection = mysql.connector.connect(
                 host='localhost',
@@ -203,25 +186,14 @@ class Professeur(IEducation,ICRUDProfesseur,Personne):
             
             if connection.is_connected():
                 cursor = connection.cursor(dictionary=True)
-                get_personne_query = "SELECT * FROM personnes WHERE id = %s"
-                cursor.execute(get_personne_query, (identifiant,))
-                personne = cursor.fetchone()
-
-                if personne:
-                    get_eleve_query = "SELECT * FROM professeurs WHERE id_personne = %s"
-                    cursor.execute(get_eleve_query, (identifiant,))
-                    prof = cursor.fetchone()
-                    if prof:
-                        result = {
-                            'personne': personne,
-                            'professeur': prof
-                        }
-                        return result
-                    else: print("Ce n'est pas un professeur")
+                get_eleve_query = "SELECT id, nom, prenom, date_naissance, ville, telephone, vacant, matiere_enseigne, prochain_cours, sujet_prochaine_reunion FROM professeurs WHERE id = %s"
+                cursor.execute(get_eleve_query, (identifiant,))
+                prof = cursor.fetchone()
+                if prof:
+                    return prof
                 else:
                     print(f"Il y a 0 professeur avec ID {identifiant}")
-                    return get_user_choice("1. Réessayer\n2. Menu précédent\nEntrez votre choix:",edit_prof,menu_professeur)
-
+                    m.get_user_choice("1. Réessayer\n2. Menu précédent\nEntrez votre choix:",gest_prof.edit_prof,gest_prof.menu_professeur)
         except Error as e:
             print(f"Error: {e}")
 

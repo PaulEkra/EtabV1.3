@@ -128,11 +128,11 @@ class Gestions_professeurs():
                 choice = m.get_whit_no_space("Entrez votre choix:")
                 if choice == "1":
                     nom=input("Entrez le nom: ")
-                    prof['nom'] = nom
+                    prof.set_nom(nom)
                     Professeur.modifier(prof)
                 elif choice == "2":
                     prenom=input("Entrez le prenom: ")
-                    prof['prenom'] = prenom
+                    prof.set_prenom(prenom)
                     Professeur.modifier(prof)
                 elif choice == "3":
                     while True:
@@ -140,41 +140,41 @@ class Gestions_professeurs():
                             dateNaissance_str = m.get_whit_no_space("Date de Naissance (format JJ-MM-AAAA): ")
                             dateNaissance = datetime.strptime(dateNaissance_str, "%d-%m-%Y").date()
                             if dateNaissance:
-                                prof['date_naissance'] = dateNaissance
+                                prof.set_dateNaissance(dateNaissance)
                                 Professeur.modifier(prof)
                         except ValueError:
                             print("Erreur : Format de date invalide. Veuillez entrer la date au format JJ-MM-AAAA.")
                 elif choice == "4":
                     ville=input("Entrez la ville: ")
-                    prof['ville'] = ville
+                    prof.set_ville(ville)
                     Professeur.modifier(prof)
                 elif choice == "5":
-                    if prof['vacant'] == True:
-                        prof['vacant'] = False
+                    if prof.get_vacant() == True:
+                        prof.set_vacant(False)
                         Professeur.modifier(prof)
                     else: 
-                        prof['vacant'] = True
+                        prof.set_vacant(True)
                         Professeur.modifier(prof)
                 elif choice == "6":
                     while True:
                         tel=input("Entrez le nuémro: ")
                         if tel.isdigit():
-                            prof['telephone'] = tel
+                            prof.set_telephone(tel)
                             Professeur.modifier(prof)
                             break
                         else:
                             print("le numéro doit être numérique")
                 elif choice == "7":
                     matiere=input("Entrez le matière: ")
-                    prof['matiere_enseigne']=matiere
+                    prof.set_matiereEnseignee(matiere)
                     Professeur.modifier(prof)
                 elif choice == "8":
                     prochain_cours=input("Entrez le prochain cours: ")
-                    prof['prochain_cours'] = prochain_cours
+                    prof.set_prochainCours(prochain_cours)
                     Professeur.modifier(prof)
                 elif choice == "9":
                     sujet_prochaine_reunion=input("Entrez le sujet de la prochaine reunion: ")
-                    prof['sujet_prochaine_reunion'] = sujet_prochaine_reunion
+                    prof.set_sujetProchaineReunion(sujet_prochaine_reunion)
                     Professeur.modifier(prof)
                 elif choice == "10":
                     Gestions_professeurs.menu_professeur()

@@ -75,10 +75,10 @@ class Eleve(Personne,ICRudeleve):
                 WHERE id = %s
                 """
                 cursor.execute(update_personne_query, 
-                        (eleve['date_naissance'], eleve['ville'], eleve['prenom'], eleve['nom'], eleve['telephone'], eleve['classe'], eleve['matricule'], eleve['id']))
+                        (eleve.get_dateNaissance(), eleve.get_ville(), eleve.get_prenom(), eleve.get_nom(), eleve.get_telephone(), eleve.get_classe(), eleve.get_matricule(), eleve.get_id()))
                 connection.commit()
 
-                print(f"Élève {eleve['prenom']} {eleve['nom']} modifié avec succès.")
+                print(f"Élève {eleve.get_prenom()} {eleve.get_nom()} modifié avec succès.")
                 gest_eleve.edit_choice(eleve)
         
         except Error as e:
@@ -163,13 +163,13 @@ class Eleve(Personne,ICRudeleve):
             )
             
             if connection.is_connected():
-                cursor = connection.cursor(dictionary=True)
-                query = "SELECT * FROM eleves WHERE id = %s"
+                cursor = connection.cursor()
+                query = "SELECT id, date_naissance, ville, prenom, nom, telephone, classe, matricule FROM eleves WHERE id = %s"
                 cursor.execute(query, (identifiant,))
                 eleve = cursor.fetchone()
 
                 if eleve:
-                    return eleve
+                    return Eleve(*eleve)
                 else:
                     print(f"Il y a 0 élève avec ID {identifiant}")
                     return m.get_user_choice("1. Réessayer\n2. Menu précédent\nEntrez votre choix:",gest_eleve.edit_eleve,gest_eleve.menu_eleve)

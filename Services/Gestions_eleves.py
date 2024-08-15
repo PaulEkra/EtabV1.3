@@ -80,11 +80,11 @@ class Gestions_eleves():
 
     def edit_eleve():
         try:
-            id = int(input("Entrez l'id de l'élève à modifier: "))
+            identifiant = int(input("Entrez l'id de l'élève à modifier: "))
         except ValueError:
             print("l'id doit être un entier")
             Gestions_eleves.edit_eleve()
-        eleve=Eleve.obtenir(id)
+        eleve=Eleve.obtenir(identifiant)
         if eleve :
             Gestions_eleves.edit_choice(eleve)
         else:
@@ -96,11 +96,11 @@ class Gestions_eleves():
                 choice = m.get_whit_no_space("Entrez votre choix:")
                 if choice == "1":
                     nom=input("Entrez le nom: ")
-                    eleve['nom']=nom
+                    eleve.set_nom(nom)
                     Eleve.modifier(eleve)
                 elif choice == "2":
                     prenom=input("Entrez le prenom: ")
-                    eleve['prenom']=prenom
+                    eleve.set_prenom(prenom)
                     Eleve.modifier(eleve)
                 elif choice == "3":
                     while True:
@@ -108,30 +108,30 @@ class Gestions_eleves():
                             dateNaissance_str = m.get_whit_no_space("Date de Naissance (format JJ-MM-AAAA): ")
                             dateNaissance = datetime.strptime(dateNaissance_str, "%d-%m-%Y").date()
                             if dateNaissance:
-                                eleve['dateNaissance']=dateNaissance
+                                eleve.set_dateNaissance(dateNaissance) 
                                 Eleve.modifier(eleve)
                         except ValueError:
                             print("Erreur : Format de date invalide. Veuillez entrer la date au format JJ-MM-AAAA.")
                 elif choice == "4":
                     ville=input("Entrez la ville: ")
-                    eleve['ville']=ville
+                    eleve.set_ville(ville)
                     Eleve.modifier(eleve)
                 elif choice == "5":
                     classe=input("Entrez la classe: ")
-                    eleve['classe']=classe
+                    eleve.set_classe(classe)
                     Eleve.modifier(eleve)
                 elif choice == "6":
                     while True:
                         tel=input("Entrez le nuémro: ")
                         if tel.isdigit():
-                            eleve['telephone']=tel
+                            eleve.set_telephone(tel)
                             Eleve.modifier(eleve)
                             break
                         else:
                             print("le numéro doit être numérique")
                 elif choice == "7":
                     mat=input("Entrez le matricule: ")
-                    eleve['matricule']=mat
+                    eleve.set_matricule(mat)
                     Eleve.modifier(eleve)
                 elif choice == "8":
                     Gestions_eleves.menu_eleve()

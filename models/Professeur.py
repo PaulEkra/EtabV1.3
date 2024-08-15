@@ -93,10 +93,10 @@ class Professeur(IEducation,ICRUDProfesseur,Personne):
                 WHERE id = %s
                 """
                 cursor.execute(query, 
-                        (professeur['date_naissance'], professeur['ville'], professeur['prenom'], professeur['nom'], professeur['telephone'],professeur['vacant'], professeur['matiere_enseigne'], professeur['prochain_cours'], professeur['sujet_prochaine_reunion'], professeur['id']))                
+                        (professeur.get_dateNaissance(),professeur.get_ville(),professeur.get_prenom(),professeur.get_nom(),professeur.get_telephone(),professeur.get_vacant(),professeur.get_matiereEnseignee(),professeur.get_prochainCours(),professeur.get_sujetProchaineReunion(),professeur.get_id()))                
                 connection.commit()
 
-                print(f"Élève {professeur['prenom']} {professeur['nom']} modifié avec succès.")
+                print(f"Élève {professeur.get_prenom()} {professeur.get_nom()} modifié avec succès.")
                 gest_prof.edit_choice(professeur)
         
         except Error as e:
@@ -185,12 +185,12 @@ class Professeur(IEducation,ICRUDProfesseur,Personne):
             )
             
             if connection.is_connected():
-                cursor = connection.cursor(dictionary=True)
-                get_eleve_query = "SELECT id, nom, prenom, date_naissance, ville, telephone, vacant, matiere_enseigne, prochain_cours, sujet_prochaine_reunion FROM professeurs WHERE id = %s"
+                cursor = connection.cursor()
+                get_eleve_query = "SELECT * FROM professeurs WHERE id = %s"
                 cursor.execute(get_eleve_query, (identifiant,))
                 prof = cursor.fetchone()
                 if prof:
-                    return prof
+                    return Professeur(*prof)
                 else:
                     print(f"Il y a 0 professeur avec ID {identifiant}")
                     m.get_user_choice("1. Réessayer\n2. Menu précédent\nEntrez votre choix:",gest_prof.edit_prof,gest_prof.menu_professeur)

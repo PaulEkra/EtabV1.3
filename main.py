@@ -22,7 +22,7 @@ class Etab():
             elif choice == "2":
                 gest_prof.menu_professeur()
             elif choice == "3":
-                gest_prof.menu_utilisateur()
+                gest_user.menu_utilisateur()
             elif choice == "0":
                 end_time = time.time()
                 duration = end_time - start_time

@@ -148,7 +148,7 @@ class Gestions_eleves():
         if eleves:
             print("Liste des élèves :")
             for e in eleves:
-                    print(f"- ID: {e[0]}, Nom: {e[1]}, Prenom: {e[2]}, Date de Naissance: {e[3]}, Ville: {e[4]}, Classe: {e[5]}, Telephone: {e[6]}, Matricule: {e[7]}")
+                    print(f"- ID: {e[0]}, Nom: {e[4]}, Prenom: {e[3]}, Date de Naissance: {e[1]}, Ville: {e[2]}, Classe: {e[6]}, Telephone: {e[5]}, Matricule: {e[7]}")
             Gestions_eleves.menu_eleve()
         else:
              print("Aucun élève trouvé.")

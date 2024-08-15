@@ -101,7 +101,7 @@ class Gestions_professeurs():
         if profs is not None:
             print("Liste des professeurs :")
             for p in profs:
-                print(f"ID: {p[0]}, Nom : {p[1]}, Prénom : {p[2]}, Ville : {p[3]}, Date de Naissance : {p[4]}, "
+                print(f"ID: {p[0]}, Nom : {p[4]}, Prénom : {p[3]}, Ville : {p[2]}, Date de Naissance : {p[1]}, "
                     f"Téléphone : {p[5]}, Matière enseigné : {p[7]}") 
             Gestions_professeurs.menu_professeur()
         else:
